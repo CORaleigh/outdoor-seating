@@ -1,0 +1,46 @@
+<div>
+<h2 class="page-header">{{establishment.properties.ESTABLISHMENT}} <span ng-class="permitStatus.style" style="vertical-align: top" class="label">{{permitStatus.label}}</span></h2>
+<div ng-if="establishment">
+<div>{{establishment.properties.ADDRESS}}, {{establishment.properties.CITY}}</div>
+<div><a ng-href="mailto:{{establishment.properties.EMAIL}}">{{establishment.properties.CONTACT}} <span class="glyphicon glyphicon-envelope"></span></a></div>
+<div>{{establishment.properties.TELEPHONE}}</div>
+<div>Permit #: {{establishment.properties.PERMIT}}</div>
+<div>Insurance Expires on {{establishment.properties.INSURANCE_DATE | date : 'MM/dd/yyyy'}}
+</div>
+<p class="lead" ng-if="!establishment">No Establishment Selected</p>
+
+<br/><p><h3 style="display: inline-block; margin-right: 1em">Violations</h3> <button style="display: inline-block; vertical-align: super" class="btn btn-success" ng-click="addViolation()" ng-if="establishment">Add</button></p>
+<p ng-show="violations.length == 0 && establishment">No Violations Reported</p>
+<div class="violation" ng-repeat="violation in violations | orderBy: '-attributes.OBJECTID'" ng-model="violation">
+	<div ng-repeat="property in violation.properties">
+		<strong>{{property.alias}}: </strong>
+			<input ng-if="!property.codedValues && violation.editing && !property.isDate" class="form-control" ng-model="property.value" ng-blur="valueChanged(violation, property)"/>
+			<div ng-if="property.codedValues && violation.editing && !property.isDate" class="select-wrapper form-control">
+				<select ng-options="cv as cv.name for cv in property.codedValues" ng-model="property.value" ng-change="valueChanged(violation, property)"></select>
+			</div>
+
+
+			<div ng-if="property.isDate && violation.editing" class="dropdown">
+			  <a class="dropdown-toggle" id="dropdown2" role="button" data-toggle="dropdown" data-target="#" href="#">
+			    <div class="input-group"><input type="text" class="form-control" data-ng-model="property.value" value="{{property.value | date: property.format}}" ><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+			    </div>
+			  </a>
+			  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+			    <datetimepicker data-ng-model="property.value" data-datetimepicker-config="{ dropdownSelector: '#dropdown2', startView: 'day', minView: property.minView }" ng-change="valueChanged(violation, property)"/>
+			  </ul>
+			</div>		
+
+
+
+			<span ng-if="!violation.editing && !isDate">{{property.codedValues ? property.value.name : property.value }}</span>
+			<span ng-if="!violation.editing && isDate">{{property.value | date: property.format}}</span>			
+	</div>
+	<em>Created: {{violation.attributes.CREATED_DATE | date: 'MM/dd/yyyy hh:mm a'}}</em>
+	<br/>
+	<em>Last Edited: {{violation.attributes.LAST_EDITED_DATE | date: 'MM/dd/yyyy hh:mm a'}}</em>
+	<div style="margin-top: 2em">
+	<button class="btn btn-success" ng-click="violation.editing = !violation.editing">{{violation.editing ? "Stop Editing" : "Edit"}}</button>
+	<button class="btn btn-danger" ng-click="deleteViolation(violation.attributes.OBJECTID)">Delete</button>
+	</div>
+</div>
+</div>

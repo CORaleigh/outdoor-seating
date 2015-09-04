@@ -1,0 +1,6 @@
+<div class="select-wrapper form-control">
+	<select ng-options="feature as feature.properties.ESTABLISHMENT for feature in features | orderBy: 'properties.ESTABLISHMENT'" ng-model="feature" ng-change="establishmentSelected(feature)"><option value="">Select establishment...</option></select>
+</div>
+
+<div id="map">
+</div>
